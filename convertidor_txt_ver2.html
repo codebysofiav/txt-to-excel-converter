@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Libro Auxiliar de Bancos – UIS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap');
+        :root {
+            --morado-header:   #8c6d9f;
+            --morado-medio:    #a688ba;
+            --rosa-accion:     #f75f85;
+            --rosa-hover:      #d94570;
+            --rosa-medio:      #cfa0a9;
+            --crema-fondo:     #fbefdf;
+            --durazno-borde:   #f0d7c1;
+            --gris-btn:        #c8b0b0;
+            --gris-hover:      #a89090;
+            --blanco:          #ffffff;
+            --texto-oscuro:    #3a2a2a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: #ede0d4;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 28px 16px 40px;
+        }
+        .card {
+            background: var(--blanco);
+            border-radius: 14px;
+            box-shadow: 0 6px 32px rgba(140,109,159,.18);
+            width: 100%;
+            max-width: 780px;
+            overflow: hidden;
+        }
+        .header {
+            background: var(--morado-header);
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .header-logo {
+            background: var(--blanco);
+            border-radius: 8px;
+            padding: 6px 10px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .header-logo img { height: 80px; width: auto; object-fit: contain; }
+        .header-title { flex: 1; text-align: center; }
+        .header-title h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.18rem;
+            font-weight: 800;
+            color: var(--blanco);
+            letter-spacing: .3px;
+            line-height: 1.3;
+        }
+        .header-title p {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--durazno-borde);
+            margin-top: 3px;
+        }
+        .body { padding: 26px 28px 30px; }
+        .instrucciones {
+            background: var(--crema-fondo);
+            border: 1.5px solid var(--durazno-borde);
+            border-radius: 9px;
+            padding: 14px 18px;
+            margin-bottom: 22px;
+        }
+        .instrucciones .inst-titulo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--rosa-accion);
+            font-size: .92rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .instrucciones p { font-size: .86rem; color: #5a3a3a; line-height: 1.55; }
+        .drop-zone {
+            background: var(--crema-fondo);
+            border: 2.5px dashed var(--durazno-borde);
+            border-radius: 12px;
+            padding: 36px 20px 28px;
+            text-align: center;
+            transition: background .2s, border-color .2s;
+            margin-bottom: 22px;
+        }
+        .drop-zone.drag-over { background: #f5ddd0; border-color: var(--rosa-accion); }
+        .drop-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
+        .drop-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--texto-oscuro);
+            margin-bottom: 8px;
+        }
+        .drop-sub { font-size: .82rem; color: var(--rosa-medio); margin-bottom: 16px; }
+        input[type="file"] { display: none; }
+        .btn-seleccionar {
+            background: var(--rosa-accion);
+            color: var(--blanco);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: .82rem;
+            letter-spacing: 1px;
+            border: none;
+            border-radius: 7px;
+            padding: 11px 28px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background .2s, transform .1s;
+        }
+        .btn-seleccionar:hover { background: var(--rosa-hover); transform: translateY(-1px); }
+        .file-list {
+            margin: 14px 0 0;
+            display: none;
+            flex-direction: column;
+            gap: 7px;
+            text-align: left;
+        }
+        .file-list.visible { display: flex; }
+        .file-item {
+            background: var(--blanco);
+            border: 1px solid var(--durazno-borde);
+            border-radius: 7px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: .84rem;
+        }
+        .file-item .fname { font-weight: 600; color: var(--morado-header); }
+        .file-item .fsize { color: #999; font-size: .78rem; margin-left: 8px; }
+        .file-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--rosa-accion);
+            font-size: 1rem;
+            padding: 0 2px;
+        }
+        .file-remove:hover { color: var(--rosa-hover); }
+        .campo-salida { margin-bottom: 20px; }
+        .campo-salida label {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: .88rem;
+            color: var(--texto-oscuro);
+            margin-bottom: 7px;
+        }
+        .campo-salida input[type="text"] {
+            width: 100%;
+            border: 1.5px solid var(--durazno-borde);
+            border-radius: 7px;
+            padding: 10px 14px;
+            font-size: .92rem;
+            font-family: 'Open Sans', sans-serif;
+            transition: border-color .2s;
+            outline: none;
+            color: var(--texto-oscuro);
+        }
+        .campo-salida input[type="text"]:focus { border-color: var(--rosa-accion); }
+        .progress-wrap { display: none; margin-bottom: 18px; }
+        .progress-wrap.visible { display: block; }
+        .progress-label { font-size: .83rem; color: var(--morado-medio); font-weight: 600; margin-bottom: 5px; }
+        .progress-bar-bg { background: var(--crema-fondo); border-radius: 6px; height: 10px; overflow: hidden; }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--rosa-accion), var(--rosa-medio));
+            height: 100%;
+            border-radius: 6px;
+            width: 0%;
+            transition: width .3s;
+        }
+        .estado {
+            display: none;
+            border-radius: 9px;
+            padding: 12px 16px;
+            font-size: .88rem;
+            margin-bottom: 18px;
+            font-weight: 600;
+        }
+        .estado.visible { display: block; }
+        .estado.ok { background: var(--crema-fondo); border: 1.5px solid var(--durazno-borde); color: #5a2a35; }
+        .estado.err { background: #ffebee; border: 1.5px solid var(--rosa-medio); color: #8c2040; }
+        .stats-grid { display: none; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 18px; }
+        .stats-grid.visible { display: grid; }
+        .stat-box {
+            background: var(--crema-fondo);
+            border: 1px solid var(--durazno-borde);
+            border-radius: 8px;
+            padding: 10px 12px;
+            text-align: center;
+        }
+        .stat-num {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--rosa-accion);
+        }
+        .stat-lbl { font-size: .76rem; color: var(--rosa-medio); margin-top: 2px; }
+        .botones { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .btn-procesar {
+            background: var(--gris-btn);
+            color: var(--blanco);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: .82rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 10px;
+            cursor: pointer;
+            transition: background .2s, transform .1s;
+        }
+        .btn-procesar.listo { background: var(--morado-header); }
+        .btn-procesar.listo:hover { background: var(--morado-medio); transform: translateY(-1px); }
+        .btn-procesar:disabled { opacity: .7; cursor: not-allowed; }
+        .btn-limpiar {
+            background: var(--blanco);
+            color: var(--gris-btn);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: .82rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 2px solid var(--gris-btn);
+            border-radius: 8px;
+            padding: 14px 10px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .btn-limpiar:hover { border-color: var(--gris-hover); color: var(--gris-hover); }
+        .footer-strip {
+            background: var(--morado-header);
+            text-align: center;
+            padding: 9px;
+            font-size: .76rem;
+            color: var(--durazno-borde);
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: .5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <div class="header-logo">
+                <img src="https://cdn-icons-png.flaticon.com/512/2844/2844335.png" alt="logo">
+            </div>
+            <div class="header-title">
+                <h1>📊 TXT Report to Excel Converter</h1>
+                <p>Financial Report Converter</p>
+            </div>
+            <!-- <div class="header-logo">
+                <img src=" " alt="Logo">
+            </div> -->
+        </div>
+
+        <div class="body">
+            <div class="instrucciones">
+                <div class="inst-titulo">💡 Instructions: </div>
+                <p>
+                    Upload one or more TXT files.
+                    The system will parse the records and generate an Excel spreadsheet.
+                </p>
+            </div>
+
+            <div class="drop-zone" id="dropZone">
+                <span class="drop-icon">📁</span>
+                <div class="drop-title">Drag your files here</div>
+                <div class="drop-sub">o</div>
+                <button class="btn-seleccionar" onclick="document.getElementById('fileInput').click()">
+                    SELECT FILES
+                </button>
+                <input type="file" id="fileInput" multiple accept=".txt"/>
+                <p class="drop-sub" style="margin-top:14px; margin-bottom:0">
+                    Supports multiple .txt files
+                </p>
+                <div class="file-list" id="fileList"></div>
+            </div>
+
+            <div class="campo-salida">
+                <label>📄 Output file name</label>
+                <input type="text" id="nombreSalida" value="Libro_nuevo"/>
+            </div>
+
+            <div class="progress-wrap" id="progressWrap">
+                <div class="progress-label" id="progressLabel">Processing files...</div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- CAMBIAR ESTA SECCIÓN PARA ESTADISTICAS GENERALES DE UN TXT -->
+
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-box">
+                    <div class="stat-num" id="statCuentas">0</div>
+                    <div class="stat-lbl">Tipos de contratos totales</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num" id="statTx">0</div>
+                    <div class="stat-lbl">Cantidad de contratos</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num" id="statFilas">0</div>
+                    <div class="stat-lbl">Valor total contratos</div>
+                </div>
+            </div>
+
+            <div class="estado" id="estado"></div>
+
+            <div class="botones">
+                <button class="btn-procesar" id="btnProcesar" onclick="procesarArchivos()" disabled>
+                    PROCESAR Y GENERAR EXCEL
+                </button>
+                <button class="btn-limpiar" onclick="limpiarTodo()">LIMPIAR TODO</button>
+            </div>
+        </div>
+
+        <div class="footer-strip">
+            Data Tools &nbsp;· &nbsp; TXT to Excel Converter
+        </div>
+    </div>
+
+    <script>
+        // ── Estado global ──────────────────────────────────────────────
+        var archivosSeleccionados = [];
+
+        // ── Referencias DOM ────────────────────────────────────────────
+        var dz       = document.getElementById('dropZone');
+        var fi       = document.getElementById('fileInput');
+        var fileList = document.getElementById('fileList');
+        var btnProcesar = document.getElementById('btnProcesar');
+
+        // ── Headers del Excel ──────────────────────────────────────────
+        var headers = [
+            "Contr", "Nro Contrato", "Modalidad Selección", "Tipo De Gasto",
+            "Objeto Del Contrato", "Valor Contrato", "Doc Contratista",
+            "Nombre Completo Del Contratista", "Persona", "Fecha Contrato",
+            "Doc Interventor", "Nombre Interventor", "UPla", "Plazo", "Anti",
+            "Valor De Anticipo", "Rubro", "Rubro Ptal", "Fecha Inicio",
+            "Fecha Termin", "Codigo Fondo Presupuestal",
+            "Unidad Academico Administrativa", "Codigo Fondo",
+            "Fondo Presupuestal", "Valor Contrato 2", "T_DOC ORD",
+            "Doc Ord Gasto", "Nombre Ordenador"
+        ];
+
+        // ── Drag & Drop ────────────────────────────────────────────────
+        dz.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dz.classList.add('drag-over');
+        });
+
+        dz.addEventListener('dragleave', function() {
+            dz.classList.remove('drag-over');
+        });
+
+        dz.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dz.classList.remove('drag-over');
+            agregarArchivos(Array.from(e.dataTransfer.files));
+        });
+
+        // ── Input file: UN SOLO listener ───────────────────────────────
+        fi.addEventListener('change', function() {
+            agregarArchivos(Array.from(fi.files));
+            fi.value = '';   // permite volver a seleccionar el mismo archivo
+        });
+
+        // ── Agregar archivos (evita duplicados) ────────────────────────
+        function agregarArchivos(files) {
+            var txt = files.filter(function(f) {
+                return f.name.toLowerCase().endsWith('.txt');
+            });
+
+            if (!txt.length) {
+                mostrarEstado('Solo se aceptan archivos .txt', 'err');
+                return;
+            }
+
+            txt.forEach(function(f) {
+                var existe = archivosSeleccionados.some(function(x) {
+                    return x.name === f.name && x.size === f.size;
+                });
+                if (!existe) archivosSeleccionados.push(f);
+            });
+
+            renderFileList();
+        }
+
+        // ── Renderizar lista de archivos ───────────────────────────────
+        function renderFileList() {
+            if (!archivosSeleccionados.length) {
+                fileList.classList.remove('visible');
+                fileList.innerHTML = '';
+                btnProcesar.disabled = true;
+                btnProcesar.classList.remove('listo');
+                return;
+            }
+
+            fileList.innerHTML = archivosSeleccionados.map(function(f, i) {
+                return '<div class="file-item">' +
+                    '<span>📄 <span class="fname">' + f.name + '</span>' +
+                    '<span class="fsize">(' + (f.size / 1024).toFixed(1) + ' KB)</span></span>' +
+                    '<button class="file-remove" onclick="quitarArchivo(' + i + ')">✕</button>' +
+                    '</div>';
+            }).join('');
+
+            fileList.classList.add('visible');
+            btnProcesar.disabled = false;
+            btnProcesar.classList.add('listo');
+        }
+
+        // ── Quitar archivo de la lista ─────────────────────────────────
+        function quitarArchivo(i) {
+            archivosSeleccionados.splice(i, 1);
+            renderFileList();
+        }
+
+        // ── Parsear TXT ────────────────────────────────────────────────
+        function parseTXT(text) {
+            var lines = text.split(/\r?\n/);
+            var start = false;
+            var data  = [];
+
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                if (!line.trim()) continue;
+
+                // La primera línea de guiones activa la lectura de datos
+                if (/^-{5,}/.test(line)) {
+                    start = true;
+                    continue;
+                }
+                if (!start) continue;
+
+                var parts = line.split('|');
+                parts = parts.slice(1, -1);           // quita primer y último elemento vacío
+                parts = parts.map(function(p) { return p.trim(); });
+
+                if (!parts.length) continue;
+
+                // Normalizar a exactamente 28 columnas
+                while (parts.length < 28) parts.push('');
+                if (parts.length > 28) parts = parts.slice(0, 28);
+
+                data.push(parts);
+            }
+            return data;
+        }
+
+        // ── Generar Excel ──────────────────────────────────────────────
+        async function generarExcel(data, nombreArchivo) {
+            var workbook = new ExcelJS.Workbook();
+            var sheet    = workbook.addWorksheet('Contratos');
+
+            // Fila de encabezados
+            var headerRow = sheet.addRow(headers);
+            headerRow.eachCell(function(cell) {
+                cell.font      = { bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill      = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A3A6B' } };
+                cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                cell.border    = {
+                    top:    { style: 'thin' }, bottom: { style: 'thin' },
+                    left:   { style: 'thin' }, right:  { style: 'thin' }
+                };
+            });
+
+            // Filas de datos
+            data.forEach(function(row) {
+                sheet.addRow(row);
+            });
+
+            // Ancho automático por columna
+            sheet.columns.forEach(function(col) {
+                var maxLen = 10;
+                col.eachCell(function(cell) {
+                    var len = cell.value ? String(cell.value).length : 0;
+                    if (len > maxLen) maxLen = len;
+                });
+                col.width = Math.min(maxLen + 2, 50);
+            });
+
+            var buffer = await workbook.xlsx.writeBuffer();
+            var blob   = new Blob([buffer], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+            var link   = document.createElement('a');
+            link.href  = URL.createObjectURL(blob);
+            link.download = nombreArchivo + '.xlsx';
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        // ─ Leer el archivo con encoding específico ──────────────
+
+        function leerArchivoConEncoding(file, encoding) {
+            return new Promise(function(resolve, reject) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    resolve(e.target.result);
+                };
+                reader.onerror = function() {
+                    reject(new Error('Error leyendo: ' + file.name));
+                };
+                reader.readAsText(file, encoding); // 👈 aquí se especifica el encoding
+            });
+        }
+
+        // ── Procesar todos los archivos ────────────────────────────────
+        async function procesarArchivos() {
+            if (!archivosSeleccionados.length) {
+                mostrarEstado('Debes seleccionar al menos un archivo .txt', 'err');
+                return;
+            }
+
+            var progressWrap  = document.getElementById('progressWrap');
+            var progressFill  = document.getElementById('progressFill');
+            var progressLabel = document.getElementById('progressLabel');
+
+            progressWrap.classList.add('visible');
+            btnProcesar.disabled = true;
+
+            var totalData = [];
+
+            for (var i = 0; i < archivosSeleccionados.length; i++) {
+                var file = archivosSeleccionados[i];
+                progressLabel.textContent = 'Procesando: ' + file.name +
+                    ' (' + (i + 1) + '/' + archivosSeleccionados.length + ')';
+
+                var text = await leerArchivoConEncoding(file, 'windows-1252'); // reemplazar con windows para que reciba caracteres especiales
+                var data = parseTXT(text);
+                totalData = totalData.concat(data);
+
+                progressFill.style.width =
+                    ((i + 1) / archivosSeleccionados.length * 100) + '%';
+
+                await new Promise(function(r) { setTimeout(r, 0); });
+            }
+
+            // Actualizar estadísticas
+            var valorTotal = totalData.reduce(function(suma, row) {
+                var val = parseFloat(String(row[5]).replace(/[^0-9.-]/g, ''));
+                return suma + (isNaN(val) ? 0 : val);
+            }, 0);
+
+            document.getElementById('statFilas').textContent = '$ ' + valorTotal.toLocaleString('es-CO');
+
+            document.getElementById('statTx').textContent      = totalData.length;
+            // Cuentas únicas: columna 0 (Contr)
+            var cuentasUnicas = new Set(totalData.map(function(r) { return r[0]; })).size;
+            document.getElementById('statCuentas').textContent = cuentasUnicas;
+            document.getElementById('statsGrid').classList.add('visible');
+
+            var nombre = document.getElementById('nombreSalida').value.trim() || 'contratos_convertidos';
+            await generarExcel(totalData, nombre);
+
+            mostrarEstado('✅ Excel generado correctamente con ' + totalData.length + ' registros.', 'ok');
+            btnProcesar.disabled = false;
+        }
+
+        // ── Mostrar mensaje de estado ──────────────────────────────────
+        function mostrarEstado(mensaje, tipo) {
+            var estado = document.getElementById('estado');
+            estado.textContent = mensaje;
+            estado.className   = 'estado visible ' + tipo;
+        }
+
+        // ── Limpiar todo ───────────────────────────────────────────────
+        function limpiarTodo() {
+            archivosSeleccionados = [];
+            renderFileList();
+            document.getElementById('progressWrap').classList.remove('visible');
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('statsGrid').classList.remove('visible');
+            document.getElementById('estado').className = 'estado';
+            document.getElementById('nombreSalida').value = 'Libro_nuevo';
+        }
+    </script>
+</body>
+</html>
