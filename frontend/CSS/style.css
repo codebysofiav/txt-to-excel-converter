@@ -1,0 +1,106 @@
+* {
+    margin: 0;
+    padding: 0 ;
+    box-sizing: border-box; 
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-image: url("../assets/background.png");
+
+    background-size: cover;        /* llena toda la pantalla */
+    background-position: center;   /* centra la imagen */
+    background-repeat: no-repeat;  /* evita repetición */
+
+    color: white;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px;
+}
+
+.lang-select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+}
+
+/* MAIN */
+.main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.card {
+    max-width: 420px;
+    width: 100%;
+}
+
+.logo-img {
+    display: block;           /* necesario para margin auto */
+    margin: 0 auto 20px;      /* centra horizontalmente */
+
+    width: 100%;              /* se adapta al contenedor */
+    max-width: 500px;         /* tamaño máximo */
+    min-width: 120px;         /* tamaño mínimo */
+
+    height: auto;             /* mantiene proporción */
+}
+
+.desc {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    margin-bottom: 30px;
+}
+
+.btn {
+    width: 50%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background: white;
+    color: #441a6b;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+}
+
+.guest {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    opacity: 1;
+}
+
+.guest:hover {
+    text-decoration: underline;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    font-size: 0.75rem;
+    opacity: 0.7;
+    padding: 10px;
+}

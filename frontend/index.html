@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang ="es">
+    <head>
+        <meta charset = "UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>FlexiParse</title>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <div class = "header">
+            <select class = "lang-select" onchange = "cambiarIdioma(this.value)">
+                <option value = "es" >ES</option>
+                <option value = "en">EN</option>
+            </select>
+        </div>
+
+        <!-- Main -->
+         <div class ="main">
+            <div class = "card" >
+                <img src = 'assets/FlexiParse.png' alt = 'FlexiParse' class="logo-img">
+                
+
+                <p class="desc" data-i18n="description">
+                    Convierte archivos TXT en Excel de forma flexible y configurable
+                </p>
+
+                <button class="btn btn-primary" data-i18n="login_btn">
+                    Iniciar sesión
+                </button>
+
+                <button class="btn btn-secondary" data-i18n="register_btn">
+                    Registrarse
+                </button>
+
+                <div class="guest" data-i18n="guest">
+                    Ingresar sin registrarse
+                </div>
+            </div>
+         </div>
+
+            <!-- FOOTER -->
+        <div class="footer">
+            © 2026 FlexiParse · Data Converter Tool
+        </div>
+
+        <!-- SCRIPT -->
+        <script>
+            const translations = {
+                es: {
+                    app_name: "FlexiParse",
+                    description: "Convierte archivos TXT en Excel de forma flexible y configurable",
+                    login_btn: "Iniciar sesión",
+                    register_btn: "Registrarse",
+                    guest: "Ingresar sin registrarse"
+                },
+                en: {
+                    app_name: "FlexiParse",
+                    description: "Convert TXT files into Excel with flexible configuration",
+                    login_btn: "Sign in",
+                    register_btn: "Register",
+                    guest: "Continue as guest"
+                }
+            };
+
+            function cambiarIdioma(lang) {
+
+                const elements = document.querySelectorAll("[data-i18n]");
+
+                elements.forEach(el => {
+                    const key = el.getAttribute("data-i18n");
+                    el.innerText = translations[lang][key];
+                });
+
+                localStorage.setItem("lang", lang);
+            }
+
+            window.onload = () => {
+                const lang = localStorage.getItem("lang") || "es";
+                cambiarIdioma(lang);
+            };
+        </script>
+
+    </body>
+</html>
